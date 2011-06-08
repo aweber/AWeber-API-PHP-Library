@@ -10,7 +10,10 @@ class MockOAuthAdapter extends OAuthApplication {
             # the new way
             '/accounts'                                => 'accounts/page1',
             '/accounts/1'                              => 'accounts/1',
+            '/accounts/1?email=joe%40example.com&ws.op=findSubscribers' => 'accounts/findSubscribers',
+            '/accounts/1?email=joe%40example.com&ws.op=findSubscribers&ws.show=total_size' => 'accounts/findSubscribers_ts',
             '/accounts/1?ws.op=getWebForms'            => 'accounts/webForms',
+            '/accounts/1?ws.op=getWebFormSplitTests'   => 'accounts/webFormSplitTests',
             '/accounts/1/lists'                        => 'lists/page1',
             '/accounts/1/lists?ws.size=20&ws.start=20' => 'lists/page2',
             '/accounts/1/lists/303449'                 => 'lists/303449',

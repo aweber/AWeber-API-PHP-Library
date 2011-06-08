@@ -95,6 +95,26 @@ class AWeberCollection extends AWeberResponse implements ArrayAccess, Iterator, 
         return $this->readResponse($data, $this->url);
     }
 
+    /** getParentEntry
+     *
+     * Gets an entry's parent entry
+     * Returns NULL if no parent entry
+     */
+    public function getParentEntry(){
+        $url_parts = split('/', $this->url);
+        $size = count($url_parts);
+
+        #Remove collection id and slash from end of url
+        $url = substr($this->url, 0, -strlen($url_parts[$size-1])-1);
+
+        try {
+            $data = $this->adapter->request('GET', $url);
+            return new AWeberEntry($data, $url, $this->adapter);
+        } catch (Exception $e) {
+            return NULL;
+        }
+    }
+
     /**
      * _getPageParams
      *

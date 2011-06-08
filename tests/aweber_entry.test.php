@@ -182,6 +182,17 @@ class TestAWeberEntry extends UnitTestCase {
 
 }
 
+class AccountTestCase extends UnitTestCase {
+
+    public function setUp() {
+        $this->adapter = new MockOAuthAdapter();
+        $this->adapter->app = new AWeberServiceProvider();
+        $url = '/accounts/1';
+        $data = $this->adapter->request('GET', $url);
+        $this->entry = new AWeberEntry($data, $url, $this->adapter);
+    }
+}
+
 /**
  * TestAWeberAccountEntry
  *
@@ -192,39 +203,78 @@ class TestAWeberEntry extends UnitTestCase {
  * @package 
  * @version $id$
  */
-class TestAWeberAccountEntry extends UnitTestCase {
-
-    public function setUp() {
-        $this->adapter = new MockOAuthAdapter();
-        $this->adapter->app = new AWeberServiceProvider();
-        $url = '/accounts/1';
-        $data = $this->adapter->request('GET', $url);
-        $this->entry = new AWeberEntry($data, $url, $this->adapter);
-        $this->data = $this->entry->getWebForms();
-    }
+class TestAWeberAccountEntry extends AccountTestCase {
 
     public function testIsAccount() {
         $this->assertEqual($this->entry->type, 'account');
     }
+}
+
+class TestAccountGetWebForms extends AccountTestCase {
+
+    public function setUp() {
+        parent::setUp();
+        $this->forms = $this->entry->getWebForms();
+    }
 
     public function testShouldReturnArray() {
-        $this->assertTrue(is_array($this->data));
+        $this->assertTrue(is_array($this->forms));
     }
 
     public function testShouldHaveCorrectCountOfEntries() {
-        $this->assertEqual(sizeOf($this->data), 181);
+        $this->assertEqual(sizeOf($this->forms), 181);
     }
 
     public function testShouldHaveEntries() {
-        foreach($this->data as $entry) {
+        foreach($this->forms as $entry) {
             $this->assertTrue(is_a($entry, 'AWeberEntry'));
         }
     }
 
     public function testShouldHaveFullURL() {
-        foreach($this->data as $entry) {
+        foreach($this->forms as $entry) {
             $this->assertTrue(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_forms\/[0-9]*$/', $entry->url));
         }
+    }
+}
+
+class TestAccountGetWebFormSplitTests extends AccountTestCase {
+
+    public function setUp() {
+        parent::setUp();
+        $this->forms = $this->entry->getWebFormSplitTests();
+    }
+
+    public function testShouldReturnArray() {
+        $this->assertTrue(is_array($this->forms));
+    }
+
+    public function testShouldHaveCorrectCountOfEntries() {
+        $this->assertEqual(sizeOf($this->forms), 10);
+    }
+
+    public function testShouldHaveEntries() {
+        foreach($this->forms as $entry) {
+            $this->assertTrue(is_a($entry, 'AWeberEntry'));
+        }
+    }
+
+    public function testShouldHaveFullURL() {
+        foreach($this->forms as $entry) {
+            $this->assertTrue(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_form_split_tests\/[0-9]*$/', $entry->url));
+        }
+    }
+}
+
+class TestAccountFindSubscribers extends AccountTestCase {
+
+    public function testShouldSupportFindSubscribersMethod() {
+        $subscribers = $this->entry->findSubscribers(array('email' => 'joe@example.com'));
+
+        $this->assertTrue(is_a($subscribers, 'AWeberCollection'));
+        $this->assertEqual(count($subscribers), 1);
+        $this->assertEqual($subscribers->data['entries'][0]['self_link'],
+                           'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1');
     }
 }
 
@@ -278,7 +328,6 @@ class TestAWeberSubscriberEntry extends UnitTestCase {
         $this->assertEqual($data['custom_fields']['Color'], 'Jeep');
     }
 }
-
 
 class TestAWeberMoveEntry extends UnitTestCase {
 
@@ -343,6 +392,38 @@ class TestAWeberMoveEntry extends UnitTestCase {
          $this->assertFalse($resp);
          return;
     }
-
 }
 
+class TestGettingEntryParentEntry extends UnitTestCase {
+
+    public function setUp() {
+        $this->adapter = new MockOAuthAdapter();
+        $this->adapter->app = new AWeberServiceProvider();
+        $url = '/accounts/1/lists/303449';
+        $data = $this->adapter->request('GET', $url);
+        $this->list = new AWeberEntry($data, $url, $this->adapter);
+        $url = '/accounts/1';
+        $data = $this->adapter->request('GET', $url);
+        $this->account = new AWeberEntry($data, $url, $this->adapter);
+        $url = '/accounts/1/lists/303449/custom_fields/1';
+        $data = $this->adapter->request('GET', $url);
+        $this->customField = new AWeberEntry($data, $url, $this->adapter);
+    }
+
+    public function testListParentShouldBeAccount() {
+        $entry = $this->list->getParentEntry();
+        $this->assertTrue(is_a($entry, 'AWeberEntry'));
+        $this->assertEqual($entry->type, 'account');
+    }
+
+    public function testCustomFieldParentShouldBeList() {
+        $entry = $this->customField->getParentEntry();
+        $this->assertTrue(is_a($entry, 'AWeberEntry'));
+        $this->assertEqual($entry->type, 'list');
+    }
+
+    public function testAccountParentShouldBeNULL() {
+        $entry = $this->account->getParentEntry();
+        $this->assertEqual($entry, NULL);
+    }
+}

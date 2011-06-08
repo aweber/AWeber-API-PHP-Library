@@ -10,7 +10,12 @@ class MockData {
         if (!MockData::$oauth) $resource = 'error';
         $dir = dirname(__FILE__);
 
-        $data = file_get_contents($dir."/data/{$resource}.json");
+        if(file_exists($dir."/data/{$resource}.json")) {
+            $data = file_get_contents($dir."/data/{$resource}.json");
+        }
+        else {
+            $data = NULL;
+        }
         $json_data = json_decode($data, true);
         if($json_data == null) {
             # used for total_size_links
