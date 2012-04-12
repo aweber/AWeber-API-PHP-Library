@@ -1,7 +1,8 @@
 <?php
+require_once('aweber_api/aweber_api.php');
+require_once('mock_adapter.php');
 
-
-class TestAWeberEntry extends UnitTestCase {
+class TestAWeberEntry extends PHPUnit_Framework_TestCase {
 
     /**
      * Before each test, sets up mock adapter to fake requests with fixture
@@ -32,34 +33,34 @@ class TestAWeberEntry extends UnitTestCase {
      * Should be able to access the id property (global to all entries)
      */
     public function testShouldBeAbleToAccessId() {
-        $this->assertEqual($this->entry->id, 303449);
+        $this->assertEquals($this->entry->id, 303449);
     }
 
     /**
      * Should be able to access name (or any property unique to the response)
      */
     public function testShouldBeAbleToAccessName() {
-        $this->assertEqual($this->entry->name, 'default303449');
+        $this->assertEquals($this->entry->name, 'default303449');
     }
 
     /**
      * Should be able to discern its type based on its data
      */
     public function testShouldKnowItsType() {
-        $this->assertEqual($this->entry->type, 'list');
+        $this->assertEquals($this->entry->type, 'list');
     }
 
     /**
      * When access properties it does not have, but are known sub collections,
-     * it will request for it and return the new collection object. 
+     * it will request for it and return the new collection object.
      */
     public function testShouldProvidedCollections() {
         $this->adapter->clearRequests();
         $campaigns = $this->entry->campaigns;
 
         $this->assertTrue(is_a($campaigns, 'AWeberCollection'));
-        $this->assertEqual(count($this->adapter->requestsMade), 1);
-        $this->assertEqual($this->adapter->requestsMade[0]['uri'],
+        $this->assertEquals(count($this->adapter->requestsMade), 1);
+        $this->assertEquals($this->adapter->requestsMade[0]['uri'],
             '/accounts/1/lists/303449/campaigns');
     }
 
@@ -69,16 +70,16 @@ class TestAWeberEntry extends UnitTestCase {
      */
     public function testShouldThrowExceptionIfNotImplemented() {
         $this->adapter->clearRequests();
-        $this->expectException(AWeberResourceNotImplemented);
+        $this->setExpectedException('AWeberResourceNotImplemented');
         $obj = $this->entry->something_not_implemented;
-        $this->assertEqual(count($this->adapter->requestsMade), 0);
+        $this->assertEquals(count($this->adapter->requestsMade), 0);
     }
 
     /**
      * Should return the name of all attributes and collections in this entry
      */
     public function testAttrs() {
-        $this->assertEqual($this->entry->attrs(),
+        $this->assertEquals($this->entry->attrs(),
             array(
                 'id'                   => 303449,
                 'name'                 => 'default303449',
@@ -99,10 +100,10 @@ class TestAWeberEntry extends UnitTestCase {
     public function testDelete() {
         $this->adapter->clearRequests();
         $resp = $this->entry->delete();
-        $this->assertIdentical($resp, true);
-        $this->assertEqual(sizeOf($this->adapter->requestsMade), 1);
-        $this->assertEqual($this->adapter->requestsMade[0]['method'], 'DELETE');
-        $this->assertEqual($this->adapter->requestsMade[0]['uri'], $this->entry->url);
+        $this->assertSame($resp, true);
+        $this->assertEquals(sizeOf($this->adapter->requestsMade), 1);
+        $this->assertEquals($this->adapter->requestsMade[0]['method'], 'DELETE');
+        $this->assertEquals($this->adapter->requestsMade[0]['uri'], $this->entry->url);
     }
 
     /**
@@ -114,21 +115,21 @@ class TestAWeberEntry extends UnitTestCase {
         $data = $this->adapter->request('GET', $url);
         $entry = new AWeberEntry($data, $url, $this->adapter);
 
-        $this->expectException(AWeberAPIException, "SimulatedException");
+        $this->setExpectedException('AWeberAPIException', 'Simulated Exception');
         $entry->delete();
     }
 
     /**
      *  Should be able to change a property in an entry's data array directly on
      *  the object, and have that change propogate to its data array
-     *  
+     *
      */
     public function testSet() {
-        $this->assertNotEqual($this->entry->name, 'mynewlistname');
-        $this->assertNotEqual($this->entry->data['name'], 'mynewlistname');
+        $this->assertNotEquals($this->entry->name, 'mynewlistname');
+        $this->assertNotEquals($this->entry->data['name'], 'mynewlistname');
         $this->entry->name = 'mynewlistname';
-        $this->assertEqual($this->entry->name, 'mynewlistname');
-        $this->assertEqual($this->entry->data['name'], 'mynewlistname');
+        $this->assertEquals($this->entry->name, 'mynewlistname');
+        $this->assertEquals($this->entry->data['name'], 'mynewlistname');
     }
 
     /**
@@ -138,12 +139,12 @@ class TestAWeberEntry extends UnitTestCase {
         $this->entry->name = 'mynewlistname';
         $this->adapter->clearRequests();
         $resp = $this->entry->save();
-        $this->assertEqual(sizeOf($this->adapter->requestsMade), 1);
+        $this->assertEquals(sizeOf($this->adapter->requestsMade), 1);
         $req = $this->adapter->requestsMade[0];
-        $this->assertEqual($req['method'], 'PATCH');
-        $this->assertEqual($req['uri'], $this->entry->url);
-        $this->assertEqual($req['data'], array('name' => 'mynewlistname'));
-        $this->assertIdentical($resp, true);
+        $this->assertEquals($req['method'], 'PATCH');
+        $this->assertEquals($req['uri'], $this->entry->url);
+        $this->assertEquals($req['data'], array('name' => 'mynewlistname'));
+        $this->assertSame($resp, true);
     }
 
     public function testSaveFailed() {
@@ -151,7 +152,7 @@ class TestAWeberEntry extends UnitTestCase {
         $data = $this->adapter->request('GET', $url);
         $entry = new AWeberEntry($data, $url, $this->adapter);
         $entry->name = 'foobarbaz';
-        $this->expectException(AWeberAPIException, "SimulatedException");
+        $this->setExpectedException('AWeberAPIException', 'Simulated Exception');
         $resp = $entry->save();
     }
 
@@ -163,18 +164,18 @@ class TestAWeberEntry extends UnitTestCase {
     public function testShouldMaintainDirtiness() {
         $this->adapter->clearRequests();
         $resp = $this->entry->save();
-        $this->assertEqual(sizeOf($this->adapter->requestsMade), 0);
+        $this->assertEquals(sizeOf($this->adapter->requestsMade), 0);
         $this->entry->name = 'mynewlistname';
         $resp = $this->entry->save();
-        $this->assertEqual(sizeOf($this->adapter->requestsMade), 1);
+        $this->assertEquals(sizeOf($this->adapter->requestsMade), 1);
         $resp = $this->entry->save();
-        $this->assertEqual(sizeOf($this->adapter->requestsMade), 1);
+        $this->assertEquals(sizeOf($this->adapter->requestsMade), 1);
     }
 
 
 }
 
-class AccountTestCase extends UnitTestCase {
+abstract class AccountTestCase extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->adapter = get_mock_adapter();
@@ -190,14 +191,14 @@ class AccountTestCase extends UnitTestCase {
  * Account entries have a handful of special named operations. This asserts
  * that they behave as expected.
  *
- * @uses UnitTestCase
- * @package 
+ * @uses PHPUnit_Framework_TestCase
+ * @package
  * @version $id$
  */
 class TestAWeberAccountEntry extends AccountTestCase {
 
     public function testIsAccount() {
-        $this->assertEqual($this->entry->type, 'account');
+        $this->assertEquals($this->entry->type, 'account');
     }
 }
 
@@ -213,7 +214,7 @@ class TestAccountGetWebForms extends AccountTestCase {
     }
 
     public function testShouldHaveCorrectCountOfEntries() {
-        $this->assertEqual(sizeOf($this->forms), 181);
+        $this->assertEquals(sizeOf($this->forms), 181);
     }
 
     public function testShouldHaveEntries() {
@@ -224,7 +225,7 @@ class TestAccountGetWebForms extends AccountTestCase {
 
     public function testShouldHaveFullURL() {
         foreach($this->forms as $entry) {
-            $this->assertTrue(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_forms\/[0-9]*$/', $entry->url));
+          $this->assertEquals(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_forms\/[0-9]*$/', $entry->url), 1);
         }
     }
 }
@@ -241,7 +242,7 @@ class TestAccountGetWebFormSplitTests extends AccountTestCase {
     }
 
     public function testShouldHaveCorrectCountOfEntries() {
-        $this->assertEqual(sizeOf($this->forms), 10);
+        $this->assertEquals(sizeOf($this->forms), 10);
     }
 
     public function testShouldHaveEntries() {
@@ -252,7 +253,7 @@ class TestAccountGetWebFormSplitTests extends AccountTestCase {
 
     public function testShouldHaveFullURL() {
         foreach($this->forms as $entry) {
-            $this->assertTrue(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_form_split_tests\/[0-9]*$/', $entry->url));
+          $this->assertEquals(preg_match('/^\/accounts\/1\/lists\/[0-9]*\/web_form_split_tests\/[0-9]*$/', $entry->url), 1);
         }
     }
 }
@@ -262,13 +263,13 @@ class TestAccountFindSubscribers extends AccountTestCase {
     public function testShouldSupportFindSubscribersMethod() {
         $subscribers = $this->entry->findSubscribers(array('email' => 'joe@example.com'));
         $this->assertTrue(is_a($subscribers, 'AWeberCollection'));
-        $this->assertEqual(count($subscribers), 1);
-        $this->assertEqual($subscribers->data['entries'][0]['self_link'],
+        $this->assertEquals(count($subscribers), 1);
+        $this->assertEquals($subscribers->data['entries'][0]['self_link'],
                            'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1');
     }
 }
 
-class TestAWeberSubscriberEntry extends UnitTestCase {
+class TestAWeberSubscriberEntry extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->adapter = get_mock_adapter();
@@ -278,7 +279,7 @@ class TestAWeberSubscriberEntry extends UnitTestCase {
     }
 
     public function testIsSubscriber() {
-        $this->assertEqual($this->entry->type, 'subscriber');
+        $this->assertEquals($this->entry->type, 'subscriber');
     }
 
     public function testHasCustomFields() {
@@ -287,18 +288,18 @@ class TestAWeberSubscriberEntry extends UnitTestCase {
     }
 
     public function testCanReadCustomFields() {
-        $this->assertEqual($this->entry->custom_fields['Color'], 'blue');
-        $this->assertEqual($this->entry->custom_fields['Walruses'], '32');
+        $this->assertEquals($this->entry->custom_fields['Color'], 'blue');
+        $this->assertEquals($this->entry->custom_fields['Walruses'], '32');
     }
 
     public function testCanUpdateCustomFields() {
         $this->entry->custom_fields['Color'] = 'Jeep';
         $this->entry->custom_fields['Walruses'] = 'Cherokee';
-        $this->assertEqual($this->entry->custom_fields['Color'], 'Jeep');
+        $this->assertEquals($this->entry->custom_fields['Color'], 'Jeep');
     }
 
     public function testCanViewSizeOfCustomFields() {
-        $this->assertEqual(sizeOf($this->entry->custom_fields), 6);
+        $this->assertEquals(sizeOf($this->entry->custom_fields), 6);
     }
 
     public function testCanIterateOverCustomFields() {
@@ -306,7 +307,7 @@ class TestAWeberSubscriberEntry extends UnitTestCase {
         foreach ($this->entry->custom_fields as $field => $value) {
             $count++;
         }
-        $this->assertEqual($count, sizeOf($this->entry->custom_fields));
+        $this->assertEquals($count, sizeOf($this->entry->custom_fields));
     }
 
     public function testShouldBeUpdatable() {
@@ -314,17 +315,17 @@ class TestAWeberSubscriberEntry extends UnitTestCase {
         $this->entry->custom_fields['Color'] = 'Jeep';
         $this->entry->save();
         $data = $this->adapter->requestsMade[0]['data'];
-        $this->assertEqual($data['custom_fields']['Color'], 'Jeep');
+        $this->assertEquals($data['custom_fields']['Color'], 'Jeep');
     }
 
     public function testShouldSupportGetActivity() {
         $activity = $this->entry->getActivity();
         $this->assertTrue(is_a($activity, 'AWeberCollection'));
-        $this->assertEqual($activity->total_size, 1);
+        $this->assertEquals($activity->total_size, 1);
     }
 }
 
-class TestAWeberMoveEntry extends UnitTestCase {
+class TestAWeberMoveEntry extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->adapter = get_mock_adapter();
@@ -352,18 +353,18 @@ class TestAWeberMoveEntry extends UnitTestCase {
          $this->adapter->clearRequests();
          $resp = $this->subscriber->move($this->different_list);
 
-         $this->assertEqual(sizeOf($this->adapter->requestsMade), 2);
+         $this->assertEquals(sizeOf($this->adapter->requestsMade), 2);
 
          $req = $this->adapter->requestsMade[0];
-         $this->assertEqual($req['method'], 'POST');
-         $this->assertEqual($req['uri'], $this->subscriber->url);
-         $this->assertEqual($req['data'], array(
+         $this->assertEquals($req['method'], 'POST');
+         $this->assertEquals($req['uri'], $this->subscriber->url);
+         $this->assertEquals($req['data'], array(
              'ws.op' => 'move',
              'list_link' => $this->different_list->self_link));
 
          $req = $this->adapter->requestsMade[1];
-         $this->assertEqual($req['method'], 'GET');
-         $this->assertEqual($req['uri'], '/accounts/1/lists/505454/subscribers/3');
+         $this->assertEquals($req['method'], 'GET');
+         $this->assertEquals($req['uri'], '/accounts/1/lists/505454/subscribers/3');
      }
 
     /**
@@ -372,21 +373,21 @@ class TestAWeberMoveEntry extends UnitTestCase {
      public function testMove_Failure() {
 
          $this->adapter->clearRequests();
-         $this->expectException(AWeberAPIException, "SimulatedException");
+         $this->setExpectedException('AWeberAPIException', 'Simulated Exception');
          $this->unsubscribed->move($this->different_list);
-         $this->assertEqual(sizeOf($this->adapter->requestsMade), 1);
+         $this->assertEquals(sizeOf($this->adapter->requestsMade), 1);
 
          $req = $this->adapter->requestsMade[0];
-         $this->assertEqual($req['method'], 'POST');
-         $this->assertEqual($req['uri'], $this->unsubscribed->url);
-         $this->assertEqual($req['data'], array(
+         $this->assertEquals($req['method'], 'POST');
+         $this->assertEquals($req['uri'], $this->unsubscribed->url);
+         $this->assertEquals($req['data'], array(
              'ws.op' => 'move',
              'list_link' => $this->different_list->self_link));
          return;
     }
 }
 
-class TestGettingEntryParentEntry extends UnitTestCase {
+class TestGettingEntryParentEntry extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->adapter = get_mock_adapter();
@@ -404,17 +405,17 @@ class TestGettingEntryParentEntry extends UnitTestCase {
     public function testListParentShouldBeAccount() {
         $entry = $this->list->getParentEntry();
         $this->assertTrue(is_a($entry, 'AWeberEntry'));
-        $this->assertEqual($entry->type, 'account');
+        $this->assertEquals($entry->type, 'account');
     }
 
     public function testCustomFieldParentShouldBeList() {
         $entry = $this->customField->getParentEntry();
         $this->assertTrue(is_a($entry, 'AWeberEntry'));
-        $this->assertEqual($entry->type, 'list');
+        $this->assertEquals($entry->type, 'list');
     }
 
     public function testAccountParentShouldBeNULL() {
         $entry = $this->account->getParentEntry();
-        $this->assertEqual($entry, NULL);
+        $this->assertEquals($entry, NULL);
     }
 }

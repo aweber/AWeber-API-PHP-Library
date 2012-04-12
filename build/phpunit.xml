@@ -1,0 +1,14 @@
+<phpunit colors="true">
+  <logging>
+    <log type="coverage-html" target="coverage" title="Name of Project"
+	 charset="UTF-8" yui="true" highlight="true"
+	 lowUpperBound="35" highLowerBound="70"/>
+    <log type="coverage-clover" target="logs/clover.xml"/>
+    <log type="junit" target="logs/junit.xml" logIncompleteSkipped="false"/>
+  </logging>
+  <testsuites>
+    <testsuite name="AWeber API PHP Library Test Suite">
+      <directory>../tests/</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

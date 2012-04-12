@@ -22,7 +22,7 @@ class AWeberAPIException extends AWeberException {
         // record specific details of the API exception for processing
         $this->url = $url;
         $this->type = $error['type'];
-        $this->status = $error['status'];
+        $this->status = array_key_exists('status', $error) ? $error['status'] : '';
         $this->message = $error['message'];
         $this->documentation_url = $error['documentation_url'];
 

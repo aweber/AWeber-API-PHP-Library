@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<ruleset name="AWeber-api">
+ <description>A custom coding standard.</description>
+ <rule ref="PEAR"/>
+</ruleset>

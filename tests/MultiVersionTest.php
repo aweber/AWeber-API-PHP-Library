@@ -11,7 +11,7 @@ function myErrorHandler($type, $msg, $errfile, $errline) {
 }
 
 
-class TestMultipleInstalledVersions extends UnitTestCase {
+class TestMultipleInstalledVersions extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         global $errors;
@@ -24,12 +24,12 @@ class TestMultipleInstalledVersions extends UnitTestCase {
     public function test_multiple_includes() {
         global $errors;
         set_error_handler("myErrorHandler");
-        include("../aweber_api/aweber_api.php");
+        include("aweber_api/aweber_api.php");
         restore_error_handler();
 
-        $this->assertEqual(count($errors), 1);
-        $this->assertEqual($errors[0]['type'], E_USER_WARNING);
-        $this->assertEqual($errors[0]['msg'], 'Duplicate: Another AWeberAPI client library is already in scope.');
+        $this->assertEquals(count($errors), 1);
+        $this->assertEquals($errors[0]['type'], E_USER_WARNING);
+        $this->assertEquals($errors[0]['msg'], 'Duplicate: Another AWeberAPI client library is already in scope.');
     }
 }
 ?>

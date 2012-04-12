@@ -1,4 +1,5 @@
 <?php
+require_once('mock_data.php');
 
 function get_mock_adapter() {
     // function to return a mock adapter
