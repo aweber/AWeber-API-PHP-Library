@@ -79,11 +79,15 @@ Testing the PHP api library requires installation of a few utilities.
 
 Setup `/etc/php.ini` configuration file. Make sure `include_path` contains the correct directories.(`/usr/lib/php` on MacOS) Set `date.timezone` to your local timezone.
 
-[PHP PEAR](http://pear.php.net/manual/en/installation.getting.php) is used to install utilities for testing and code metrics. Upgrade to the latest version using `sudo pear upgrade pear`.
+[PHP PEAR](http://pear.php.net/manual/en/installation.getting.php) is
+used to install utilities for testing and code metrics. Upgrade to the
+latest version using `sudo pear upgrade pear`.
 
 [PHP QA Tools](http://pear.phpqatools.org/) contain a collection of PHP testing tools. The following commands were needed to install:
 
 ```bash
+sudo pear upgrade
+sudo pear config-set auto_discover 1
 sudo pear channel-discover pear.phpqatools.org
 sudo pear install phpqatools/phpqatools
 ```
