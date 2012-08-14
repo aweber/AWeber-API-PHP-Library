@@ -1,4 +1,4 @@
-AWeber API PHP Library
+AWeber API PHP Library [![Build Status](https://secure.travis-ci.org/aweber/AWeber-API-PHP-Library.png)](http://travis-ci.org/aweber/AWeber-API-PHP-Library)
 ======================
 
 PHP library for easily integrating with the AWeber API.
