@@ -5,3 +5,8 @@ php:
  - 5.4
 
 script: phpunit --configuration build/phpunit.xml
+
+notifications:
+  email:
+    recipients:
+      - travisci@aweber.com
