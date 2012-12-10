@@ -61,6 +61,10 @@ subscriber information.
 
 Changelog:
 ----------
+2012-12-10: v1.1.7
+  * Added a parameter to the Move Subscriber method for last followup message number sent.
+    * to support version 1.0.16 of the API.  See https://labs.aweber.com/docs/changelog
+
 2012-09-19: v1.1.6
   * Fixed a bug that prevented resource attributes from being saved when the initial value of the resource attribute was null.
     * used array_key_exists instead of isset for evaluation of associative arrays.  Requires PHP >= 4.0.7

@@ -384,7 +384,32 @@ class TestAWeberMoveEntry extends PHPUnit_Framework_TestCase {
              'ws.op' => 'move',
              'list_link' => $this->different_list->self_link));
          return;
-    }
+     }
+
+     /**
+     * Move with LastMessageSentNumber Succeeded
+     */
+    public function testMoveWLastMessageNumberSent_Success() {
+         $this->last_followup_message_number_sent = 1;
+
+         $this->adapter->clearRequests();
+         $resp = $this->subscriber->move($this->different_list, $this->last_followup_message_number_sent);
+
+         $this->assertEquals(sizeOf($this->adapter->requestsMade), 2);
+
+         $req = $this->adapter->requestsMade[0];
+         $this->assertEquals($req['method'], 'POST');
+         $this->assertEquals($req['uri'], $this->subscriber->url);
+         $this->assertEquals($req['data'], array(
+             'ws.op' => 'move',
+             'list_link' => $this->different_list->self_link,
+             'last_followup_message_number_sent' => $this->last_followup_message_number_sent));
+
+         $req = $this->adapter->requestsMade[1];
+         $this->assertEquals($req['method'], 'GET');
+         $this->assertEquals($req['uri'], '/accounts/1/lists/505454/subscribers/3');
+     }
+
 }
 
 class TestGettingEntryParentEntry extends PHPUnit_Framework_TestCase {

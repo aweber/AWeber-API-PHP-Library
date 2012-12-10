@@ -92,9 +92,16 @@ class AWeberEntry extends AWeberResponse {
      * @return mixed AWeberEntry(Resource) Resource created on List ($list)
      *                                     or False if resource was not created.
      */
-    public function move($list) {
+    public function move($list, $last_followup_message_number_sent=NULL) {
         # Move Resource
-        $params = array('ws.op' => 'move', 'list_link' => $list->self_link);
+        $params = array(
+                        'ws.op' => 'move',
+                        'list_link' => $list->self_link
+                    );
+        if (isset($last_followup_message_number_sent)) {
+            $params['last_followup_message_number_sent'] = $last_followup_message_number_sent;
+        }
+
         $data = $this->adapter->request('POST', $this->url, $params, array('return' => 'headers'));
 
         # Return new Resource
