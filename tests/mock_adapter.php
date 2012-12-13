@@ -35,6 +35,7 @@ $map['GET'   ]['/accounts/1?email=joe%40example.com&ws.op=findSubscribers&ws.sho
 $map['GET'   ]['/accounts/1?email=joe%40example.com&ws.op=findSubscribers'                                      ] = array(200, 'accounts/findSubscribers');
 $map['GET'   ]['/accounts/1?ws.op=getWebFormSplitTests'                                                         ] = array(200, 'accounts/webFormSplitTests');
 $map['GET'   ]['/accounts/1?ws.op=getWebForms'                                                                  ] = array(200, 'accounts/webForms');
+$map['GET'   ]['/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.show=total_size'            ] = array(200, 'empty');
 
 $map['PATCH' ]['/accounts/1/lists/303449'                                                                       ] = array(209, 'lists/303449');
 $map['PATCH' ]['/accounts/1/lists/303449/subscribers/1'                                                         ] = array(209, 'subscribers/1');
@@ -78,7 +79,6 @@ class MockOAuthAdapter extends OAuthApplication {
 
         # load response from fixture and return data
         $mock_data = MockData::load($resource);
-
         if (!$mock_data) {
             $msg  = 'Unable to connect to the AWeber API.  Please ensure that CURL is enabled and your ';
             $msg .= 'firewall allows outbound SSL requests from your web server.';

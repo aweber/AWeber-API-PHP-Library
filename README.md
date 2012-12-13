@@ -61,6 +61,9 @@ subscriber information.
 
 Changelog:
 ----------
+2012-12-13: v1.1.8
+  * Fixed a bug that resulted in Exceptions being raised when using collections when the collection size is zero.
+
 2012-12-10: v1.1.7
   * Added a parameter to the Move Subscriber method for last followup message number sent.
     * to support version 1.0.16 of the API.  See https://labs.aweber.com/docs/changelog

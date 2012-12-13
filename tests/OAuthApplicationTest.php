@@ -1,5 +1,6 @@
 <?php
 require_once('aweber_api/aweber_api.php');
+require_once('mock_adapter.php');
 
 if (!class_exists('Object')) {
     class Object {}
@@ -291,6 +292,14 @@ class TestOAuthAppliation extends PHPUnit_Framework_TestCase {
             'oauth_callback_confirmed' => 'true',
         );
         $this->assertSame($data, $dataShouldBe, 'Data is parsed correctly.');
+    }
+
+    public function testRequestReturnValueIsZeroNotInJSONFormat(){
+        $this->adapter = get_mock_adapter();
+        $url = '/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.show=total_size';
+        $data = $this->adapter->request('GET', $url);
+        $this->assertTrue(isset($data));
+        $this->assertEquals($data,0);
     }
 
 }

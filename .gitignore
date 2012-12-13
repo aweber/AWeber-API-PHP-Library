@@ -1,2 +1,10 @@
-*.svn
+.DS_Store
+Icon?
+Thumbs.db
+ehthumbs.db
+*.bak
+*.swm
+*.swn
+*.swo
 *.swp
+*~

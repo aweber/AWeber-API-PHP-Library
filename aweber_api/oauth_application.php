@@ -117,7 +117,6 @@ class OAuthApplication implements AWeberOAuthAdapter {
         }
 
         $response = $this->makeRequest($method, $url, $data);
-
         if (!empty($options['return'])) {
             if ($options['return'] == 'status') {
                 return $response->headers['Status-Code'];
@@ -129,8 +128,10 @@ class OAuthApplication implements AWeberOAuthAdapter {
                 return intval($response->body);
             }
         }
+
         $data = json_decode($response->body, true);
-        if (empty($options['allow_empty']) && empty($data)) {
+
+        if (empty($options['allow_empty']) && !isset($data)) {
             throw new AWeberResponseError($uri);
         }
         return $data;
