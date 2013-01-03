@@ -61,6 +61,9 @@ subscriber information.
 
 Changelog:
 ----------
+2013-01-03: v1.1.9
+  * Updated client library to support 1.0.17 of the API. (Broadcast Statistics)
+
 2012-12-13: v1.1.8
   * Fixed a bug that resulted in Exceptions being raised when using collections when the collection size is zero.
 
