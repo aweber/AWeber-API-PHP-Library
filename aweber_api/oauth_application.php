@@ -467,8 +467,7 @@ class OAuthApplication implements AWeberOAuthAdapter {
         }
 
         if (!$resp) {
-            $msg  = 'Unable to connect to the AWeber API.  Please ensure that CURL is enabled and your ';
-            $msg .= 'firewall allows outbound SSL requests from your web server.';
+            $msg  = 'Unable to connect to the AWeber API.  (' . $this->error . ')';
             $error = array('message' => $msg, 'type' => 'APIUnreachableError',
                            'documentation_url' => 'https://labs.aweber.com/docs/troubleshooting');
             throw new AWeberAPIException($error, $url);

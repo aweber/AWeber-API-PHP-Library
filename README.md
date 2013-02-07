@@ -61,6 +61,9 @@ subscriber information.
 
 Changelog:
 ----------
+2013-02-07: v1.1.10
+  * Updated APIUnreachableException to provide more diagnostic data.
+
 2013-01-03: v1.1.9
   * Updated client library to support 1.0.17 of the API. (Broadcast Statistics)
 
