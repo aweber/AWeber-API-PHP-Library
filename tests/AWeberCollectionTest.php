@@ -2,6 +2,75 @@
 require_once('aweber_api/aweber_api.php');
 require_once('mock_adapter.php');
 
+
+class TestFindCollection extends PHPUnit_Framework_TestCase {
+
+    public function setUp() {
+        $url = '/accounts/1/lists/303449/subscribers';
+        $this->adapter = get_mock_adapter();
+        $this->subscribers = new AWeberCollection(
+            $this->adapter->request('GET', $url), 
+            $url,
+            $this->adapter);
+        $this->adapter->clearRequests();
+        $this->params = array('status' => 'unsubscribed', 'ws.size' => 1, 'ws.start' => 0);
+        $this->found = $this->subscribers->find($this->params);
+    }
+
+    /**
+     * The find method makes two requests, one for the collection, and the other to get total_size.
+     */
+    public function testShouldInitiallyMake2APIRequests() {
+        $this->assertEquals(count($this->adapter->requestsMade), 2);
+    }
+
+    /**
+     * The first of two requests, verify the url to get the collection.
+     */
+    public function testShouldRequestCollectionPageFirst() {
+        #$this->subscribers->find($this->params);
+        $uri = $this->adapter->requestsMade[0]['uri'];
+        $this->assertEquals($uri, '/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=0&ws.op=find');
+    }
+
+    /**
+     * The second of two requests, verify the url to get the total size.
+     */
+    public function testShouldRequestTotalSizePageSecond() {
+        $uri = $this->adapter->requestsMade[1]['uri'];
+        $this->assertEquals($uri, '/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=0&ws.op=find&ws.show=total_size');
+    }
+
+    /**
+     * Pagination: An additional fetch is made when there is a next_collection_link included 
+     */
+    public function testShouldFetchDataforDataNotPreviouslyLoaded() {
+        $this->adapter->clearRequests();
+        $subscriber = $this->found[1];
+        $this->assertEquals(count($this->adapter->requestsMade), 1);
+    }
+
+    /**
+     * Pagination: the first of two requests for the next fetch.  Verify the url to get the next collection.
+     */
+    public function testShouldRequestCorrectCollectionPage() {
+        $this->adapter->clearRequests();
+        $subscriber = $this->found[1];
+        $uri = $this->adapter->requestsMade[0]['uri'];
+        $this->assertEquals($uri, '/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=1&ws.op=find');
+    }
+
+    /**
+     * Pagination: the second of two requests for the next fetch.  Verify the url to get the total size of the next collection.
+     */
+    public function testShouldFetchCorrectDataOnSecondPage() {
+        $this->adapter->clearRequests();
+        $subscriber = $this->found[1];
+        $this->assertEquals($subscriber->data['self_link'], 'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/50205518');
+    }
+}
+
+
 class TestAWeberCollection extends PHPUnit_Framework_TestCase {
 
     /**

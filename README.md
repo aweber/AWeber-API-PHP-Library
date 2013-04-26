@@ -61,6 +61,21 @@ subscriber information.
 
 Changelog:
 ----------
+2013-04-25: v1.1.11
+  * Fixed a bug in the Collection Find Subscriber method where fetching the next page in the collection had not
+    included the previous search parameters.
+
+  * We've changed how we store collection data internally in AWeberCollection objects to
+    reduce the amount of memory required for large collections.
+
+    To lower memory usage, the AWeberCollection only stores a single page of entries
+    as you iterate thru the collection.
+
+    - foreach and sequential array indexing operations now require less memory.
+
+    - Random access of array elements by indexes will fetch pages of the collection
+      from the API on demand if the collection data is not already in memory.
+
 2013-02-07: v1.1.10
   * Updated APIUnreachableException to provide more diagnostic data.
 

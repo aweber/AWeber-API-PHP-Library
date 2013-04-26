@@ -30,12 +30,17 @@ $map['GET'   ]['/accounts/1/lists/303449/subscribers?email=someone%40example.com
 $map['GET'   ]['/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.op=find'                    ] = array(200, 'subscribers/find');
 $map['GET'   ]['/accounts/1/lists/505454'                                                                       ] = array(200, 'lists/505454');
 $map['GET'   ]['/accounts/1/lists/505454/subscribers/3'                                                         ] = array(200, 'subscribers/3');
-$map['GET'   ]['/accounts/1/lists?ws.size=20&ws.start=20'                                                       ] = array(200, 'lists/page2');
+$map['GET'   ]['/accounts/1/lists?ws.start=20&ws.size=20'                                                       ] = array(200, 'lists/page2');
 $map['GET'   ]['/accounts/1?email=joe%40example.com&ws.op=findSubscribers&ws.show=total_size'                   ] = array(200, 'accounts/findSubscribers_ts');
 $map['GET'   ]['/accounts/1?email=joe%40example.com&ws.op=findSubscribers'                                      ] = array(200, 'accounts/findSubscribers');
 $map['GET'   ]['/accounts/1?ws.op=getWebFormSplitTests'                                                         ] = array(200, 'accounts/webFormSplitTests');
 $map['GET'   ]['/accounts/1?ws.op=getWebForms'                                                                  ] = array(200, 'accounts/webForms');
 $map['GET'   ]['/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.show=total_size'            ] = array(200, 'empty');
+
+# collection pagination tests
+$map['GET'   ]['/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=0&ws.op=find'                   ] = array(200, 'subscribers/find_1of2');
+$map['GET'   ]['/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=1&ws.op=find'                   ] = array(200, 'subscribers/find_2of2');
+$map['GET'   ]['/accounts/1/lists/303449/subscribers?status=unsubscribed&ws.size=1&ws.start=0&ws.op=find&ws.show=total_size'] = array(200, 'subscribers/find_1of2_tsl');
 
 $map['PATCH' ]['/accounts/1/lists/303449'                                                                       ] = array(209, 'lists/303449');
 $map['PATCH' ]['/accounts/1/lists/303449/subscribers/1'                                                         ] = array(209, 'subscribers/1');
@@ -71,6 +76,7 @@ class MockOAuthAdapter extends OAuthApplication {
         }
 
         # extract response map parameters
+        #
         $status = $map[$method][$uri][0];
         $resource = $map[$method][$uri][1];
 
