@@ -191,8 +191,9 @@ class AWeberCollection extends AWeberResponse implements ArrayAccess, Iterator, 
         $pagination_offset = intval($offset / $limit) * $limit;
         $params['ws.start'] = $pagination_offset;
 
-        # fetch data
-        $data = $this->adapter->request('GET', $this->url, $params);
+        # fetch data, exclude query string
+        $url_parts = explode('?', $this->url);
+        $data = $this->adapter->request('GET', $url_parts[0], $params);
         $this->pageStart = $params['ws.start'];
         $this->pageSize = $params['ws.size'];
 
