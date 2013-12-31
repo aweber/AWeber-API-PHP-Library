@@ -76,6 +76,11 @@ class OAuthApplication implements AWeberOAuthAdapter {
     public $consumerSecret = false;
 
     /**
+     * @var int The timestamp of the last request to be mindful of the AWeber rate limit
+     */
+    public $lastRequestTime = 0;
+
+    /**
      * __construct
      *
      * Create a new OAuthApplication, based on an OAuthServiceProvider
@@ -115,6 +120,12 @@ class OAuthApplication implements AWeberOAuthAdapter {
                 }
             }
         }
+
+        // Check if rate limit is in effect
+        while ((microtime(true) - $this->lastRequestTime) <= 1) {
+            usleep(100000); // Wait 1/10th second and check again.
+        }
+        $this->lastRequestTime = microtime(true);
 
         $response = $this->makeRequest($method, $url, $data);
         if (!empty($options['return'])) {
@@ -235,9 +246,9 @@ class OAuthApplication implements AWeberOAuthAdapter {
     /**
      * _addParametersToUrl
      *
-     * Adds the parameters in associative array $data to the 
+     * Adds the parameters in associative array $data to the
      * given URL
-     * @param String $url       URL 
+     * @param String $url       URL
      * @param array $data       Parameters to be added as a query string to
      *      the URL provided
      * @access protected

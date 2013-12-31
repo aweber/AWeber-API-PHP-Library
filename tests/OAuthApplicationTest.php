@@ -302,4 +302,14 @@ class TestOAuthAppliation extends PHPUnit_Framework_TestCase {
         $this->assertEquals($data,0);
     }
 
+    public function testRequestsObeyAWeberRateLimit() {
+        $this->adapter = get_mock_adapter();
+        $url = '/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.show=total_size';
+        $data = $this->adapter->request('GET', $url);
+        $time1 = microtime(true);
+        $url = '/accounts/1/lists/303449/subscribers?email=someone%40example.com&ws.show=total_size';
+        $data = $this->adapter->request('GET', $url);
+        $time2 = microtime(true);
+        $this->assertGreaterThanOrEqual(1, ($time2 - $time1));
+    }
 }
