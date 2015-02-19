@@ -61,6 +61,9 @@ subscriber information.
 
 Changelog:
 ----------
+2015-02-19: v1.1.14
+  * Bump
+
 2015-02-17: v1.1.13
   * Remove double encoding in requests to support utf-8
 
