@@ -10,8 +10,8 @@
         "issues": "https://github.com/aweber/AWeber-API-PHP-Library"
     },
     "autoload": {
-        "psr-4": {
-            "": "aweber_api/"
-        }
+        "files": [
+            "aweber_api/aweber_api.php"
+        ]
     }
 }
