@@ -239,9 +239,9 @@ class OAuthApplication implements AWeberOAuthAdapter {
     /**
      * _addParametersToUrl
      *
-     * Adds the parameters in associative array $data to the 
+     * Adds the parameters in associative array $data to the
      * given URL
-     * @param String $url       URL 
+     * @param String $url       URL
      * @param array $data       Parameters to be added as a query string to
      *      the URL provided
      * @access protected
@@ -431,7 +431,7 @@ class OAuthApplication implements AWeberOAuthAdapter {
      * makeRequest
      *
      * Public facing function to make a request
-     * 
+     *
      * @param mixed $method
      * @param mixed $url  - Reserved characters in query params MUST be escaped
      * @param mixed $data - Reserved characters in values MUST NOT be escaped
@@ -441,7 +441,7 @@ class OAuthApplication implements AWeberOAuthAdapter {
     public function makeRequest($method, $url, $data=array()) {
 
         if ($this->debug) echo "\n** {$method}: $url\n";
-        
+
         switch (strtoupper($method)) {
             case 'POST':
                 $oauth = $this->prepareRequest($method, $url, $data);
@@ -450,6 +450,9 @@ class OAuthApplication implements AWeberOAuthAdapter {
 
             case 'GET':
                 $oauth = $this->prepareRequest($method, $url, $data);
+                /**
+                 * @todo Parameter Mismatched
+                 */
                 $resp = $this->get($url, $oauth, $data);
                 break;
 
