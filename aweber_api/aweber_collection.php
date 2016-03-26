@@ -15,7 +15,7 @@ class AWeberCollection extends AWeberResponse implements ArrayAccess, Iterator, 
             $url = $this->data['prev_collection_link'];
         }
 
-        # scan querystring for ws_size
+        # scan query string for ws_size
         $url_parts = parse_url($url);
 
         # we have a query string

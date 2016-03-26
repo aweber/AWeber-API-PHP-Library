@@ -92,7 +92,7 @@ class AWeberOAuthException extends AWeberException {
  * response. This differs from the exception that might be thrown as
  * an AWeberOAuthException when parameters are not provided because
  * it is not the servers' expectations that were not met, but rather
- * the expecations of the client were not met by the server.
+ * the expectations of the client were not met by the server.
  *
  * @uses AWeberException
  * @package
