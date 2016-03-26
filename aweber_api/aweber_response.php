@@ -3,12 +3,12 @@
 /**
  * AWeberResponse
  *
- * Base class for objects that represent a response from the AWeberAPI. 
+ * Base class for objects that represent a response from the AWeberAPI.
  * Responses will exist as one of the two AWeberResponse subclasses:
  *  - AWeberEntry - a single instance of an AWeber resource
  *  - AWeberCollection - a collection of AWeber resources
  * @uses AWeberAPIBase
- * @package 
+ * @package
  * @version $id$
  */
 class AWeberResponse extends AWeberAPIBase {
@@ -36,7 +36,7 @@ class AWeberResponse extends AWeberAPIBase {
 
     /**
      * __set
-     * 
+     *
      * Manual re-implementation of __set, allows sub classes to access
      * the default behavior by using the parent:: format.
      *
@@ -51,7 +51,7 @@ class AWeberResponse extends AWeberAPIBase {
     /**
      * __get
      *
-     * PHP "MagicMethod" to allow for dynamic objects.  Defers first to the 
+     * PHP "MagicMethod" to allow for dynamic objects.  Defers first to the
      * data in $this->data.
      *
      * @param String $value  Name of the attribute requested
@@ -69,5 +69,3 @@ class AWeberResponse extends AWeberAPIBase {
     }
 
 }
-
-

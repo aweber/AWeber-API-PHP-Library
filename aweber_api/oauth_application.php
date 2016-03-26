@@ -681,5 +681,3 @@ class OAuthUser {
     }
 
 }
-
-?>
