@@ -270,7 +270,7 @@ class OAuthApplication implements AWeberOAuthAdapter {
      */
     public function generateNonce($timestamp = false) {
         if (!$timestamp) $timestamp = $this->generateTimestamp();
-        return md5($timestamp.'-'.rand(10000,99999).'-'.uniqid());
+        return md5($timestamp.'-'.mt_rand(10000,99999).'-'.uniqid());
     }
 
     /**
