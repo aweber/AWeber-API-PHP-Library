@@ -129,7 +129,7 @@ class OAuthApplication implements AWeberOAuthAdapter {
                 return $response->headers;
             }
             if ($options['return'] == 'integer') {
-                return intval($response->body);
+                return (int)($response->body);
             }
         }
 
