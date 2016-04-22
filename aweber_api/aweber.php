@@ -105,6 +105,28 @@ class AWeberAPIBase {
         return $this->readResponse($data, $url);
     }
 
+    /**
+     * createToUrl
+     *
+     * Invoke the API method to CREATE a new entry resource.
+     * without creating an object.
+     *
+     * Note: Not all entry resources are eligible to be created, please
+     *       refer to the AWeber API Reference Documentation at
+     *       https://labs.aweber.com/docs/reference/1.0 for more
+     *       details on which entry resources may be created and what
+     *       attributes are required for creating resources.
+     *
+     * @param mixed $url    URL for this request
+     * @param params mixed  associtative array of key/value pairs.
+     * @access public
+     * @return mixed reply header
+     */
+    public function createToUrl($url, $kv_pairs) {
+        $params = array_merge(array('ws.op' => 'create'), $kv_pairs);
+        return $this->adapter->request('POST', $url, $params, array('return' => 'headers'));
+    }
+
     protected function _cleanUrl($url) {
         return str_replace($this->adapter->app->getBaseUri(), '', $url);
     }
@@ -228,6 +250,13 @@ class AWeberAPI extends AWeberAPIBase {
         $this->adapter = $adapter;
     }
 
+    public function setUser($token, $secret) {
+        $user = new OAuthUser();
+        $user->accessToken = $token;
+        $user->tokenSecret = $secret;
+        $this->adapter->user = $user;
+    }
+
     /**
      * Fetches account data for the associated account
      *
@@ -240,10 +269,7 @@ class AWeberAPI extends AWeberAPIBase {
      */
     public function getAccount($token=false, $secret=false) {
         if ($token && $secret) {
-            $user = new OAuthUser();
-            $user->accessToken = $token;
-            $user->tokenSecret = $secret;
-            $this->adapter->user = $user;
+            $this->setUser($token,$secret);
         }
 
         $body = $this->adapter->request('GET', '/accounts');
