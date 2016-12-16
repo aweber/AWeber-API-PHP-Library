@@ -6,6 +6,3 @@ interface AWeberOAuthAdapter {
     public function getRequestToken($callbackUrl=false);
 
 }
-
-
-?>
