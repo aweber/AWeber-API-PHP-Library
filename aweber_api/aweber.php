@@ -120,12 +120,15 @@ class AWeberAPIBase {
      */
     protected function readResponse($response, $url) {
         $this->adapter->parseAsError($response);
-        if (!empty($response['id']) || !empty($response['broadcast_id'])) {
-            return new AWeberEntry($response, $url, $this->adapter);
-        } else if (array_key_exists('entries', $response)) {
-            return new AWeberCollection($response, $url, $this->adapter);
+        if (is_array($response)) {
+            if (!empty($response['id']) || !empty($response['broadcast_id'])) {
+                return new AWeberEntry($response, $url, $this->adapter);
+            } else if (array_key_exists('entries', $response)) {
+                return new AWeberCollection($response, $url, $this->adapter);
+            }
         }
-        return false;
+
+        return $response;
     }
 }
 
